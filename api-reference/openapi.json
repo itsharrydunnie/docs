@@ -1,58 +1,36 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.3",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
+    "title": "Pacepard API",
+    "description": "A simple Pacepard API example using OpenAPI 3.0.3",
     "version": "1.0.0"
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
-    }
-  ],
-  "security": [
+      "url": "https://api.pacepard.com/v1",
+      "description": "Production server"
+    },
     {
-      "bearerAuth": []
+      "url": "http://localhost:3000",
+      "description": "Local development server"
     }
   ],
   "paths": {
-    "/plants": {
+    "/mentors/hackathon/:id": {
       "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
+        "summary": "Get all mentors related to an Hackathon",
+        "operationId": "getAllMentors",
+        "tags": ["Mentors"],
         "responses": {
           "200": {
-            "description": "Plant response",
+            "description": "List of Mentors",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
+                  "type": "object",
                   "items": {
-                    "$ref": "#/components/schemas/Plant"
+                    "$ref": "#/components/schemas/ApiResponse"
                   }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -60,93 +38,29 @@
         }
       },
       "post": {
-        "description": "Creates a new plant in the store",
+        "summary": "Create a new Mentor",
+        "operationId": "addMentor",
+        "tags": ["Mentors"],
         "requestBody": {
-          "description": "Plant to add to the store",
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "webhooks": {
-    "/plant/webhook": {
-      "post": {
-        "description": "Information about a new plant added to the store",
-        "requestBody": {
-          "description": "Plant added to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "$ref": "#/components/schemas/MentorCreate"
               }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
+          "201": {
+            "description": "Mentor Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -154,63 +68,78 @@
   },
   "components": {
     "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
+      "Todo": {
         "type": "object",
+        "required": ["id", "title", "completed"],
         "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
+          "id": {
+            "type": "string",
+            "example": "64fa1f2c7b8f3a0012a3e456"
           },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
+          "title": {
+            "type": "string",
+            "example": "Buy groceries"
+          },
+          "completed": {
+            "type": "boolean",
+            "example": false
           }
         }
       },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
-      "Error": {
+      "MentorCreate": {
+        "type": "object",
         "required": [
-          "error",
-          "message"
+          "firstName",
+          "lastName",
+          "jobTitle",
+          "organization",
+          "bio",
+          "areasOfExpertise",
+          "yearsOfExperience",
+          "email",
+          "linkedInUrl",
+          "githubUrl",
+          "website",
+          "hackathonId",
+          "orgId"
         ],
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "example": "Harry"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Dunnie"
+          },
+          "jobTitle": {
+            "type": "string",
+            "example": "Software Eng"
+          },
+          "organization": {
+            "type": "string",
+            "example": "Pacepard"
+          }
+        }
+      },
+      "ApiResponse": {
         "type": "object",
         "properties": {
           "error": {
-            "type": "integer",
-            "format": "int32"
+            "type": "boolean",
+            "description": "Indicates if there was an error"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "Human-readable message about the response"
+          },
+          "data": {
+            "type": "object",
+            "description": "Response payload, always an object, sometimes empty",
+            "additionalProperties": true
           }
-        }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
+        },
+        "required": ["error", "message", "data"]
       }
     }
   }
